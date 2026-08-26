@@ -2,4 +2,4 @@ print ("Primer programa del Proyecto Integrador")
 
 #Integrantes: 
 
-print ("Nombre del equipo: Consejo del Mate")
+print ("Nombre del equipo: Consejo Del Mate")
