@@ -1,8 +1,3 @@
-"""
-Sistema de gestión de un torneo de eSports (FIFA) - Etapa 1.
-Prototipo funcional en memoria: los datos se pierden al cerrar el programa.
-Punto de entrada: menú interactivo por consola.
-"""
 
 from datos import (
     EQUIPOS, FIXTURE, CANTIDAD_FECHAS, REGLAS_TORNEO,
@@ -11,7 +6,7 @@ from datos import (
 import operaciones as ops
 
 
-# ---------- Funciones de presentación (entrada/salida por consola) ----------
+#Funciones de presentación
 
 def mostrar_menu():
     print("\n=== TORNEO DE ESPORTS (FIFA) - MENÚ PRINCIPAL ===")
@@ -26,7 +21,6 @@ def mostrar_menu():
 
 
 def pedir_entero(mensaje, minimo=None, maximo=None):
-    """Pide un entero por consola hasta que el usuario ingrese uno válido."""
     while True:
         texto = input(mensaje)
         valido, resultado = ops.validar_entero(texto, minimo, maximo)

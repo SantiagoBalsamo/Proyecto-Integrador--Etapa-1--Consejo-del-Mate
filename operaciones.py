@@ -1,9 +1,4 @@
-"""
-Módulo de operaciones.
-Contiene validaciones, búsquedas, cálculos e informes sobre las
-estructuras de datos del torneo. No debe depender de input(); solo
-calcula y devuelve resultados para que main.py los presente.
-"""
+
 
 from datos import (
     EQUIPOS, FIXTURE, CANTIDAD_EQUIPOS,
@@ -11,13 +6,9 @@ from datos import (
 )
 
 
-# ---------- Validaciones ----------
+#Validaciones
 
 def validar_entero(texto, minimo=None, maximo=None):
-    """
-    Convierte un texto a entero y valida rango opcional.
-    Devuelve (True, valor) si es válido, o (False, mensaje_error) si no.
-    """
     texto = texto.strip()
     if texto == "":
         return False, "el valor no puede estar vacío."
@@ -32,10 +23,9 @@ def validar_entero(texto, minimo=None, maximo=None):
     return True, valor
 
 
-# ---------- Registro de resultados ----------
+#Registro de resultados
 
 def calcular_puntos(goles_local, goles_visitante):
-    """Devuelve (puntos_local, puntos_visitante) según el resultado del partido."""
     if goles_local > goles_visitante:
         return PUNTOS_VICTORIA, PUNTOS_DERROTA
     if goles_local < goles_visitante:
@@ -44,8 +34,6 @@ def calcular_puntos(goles_local, goles_visitante):
 
 
 def partido_cargado(partidos, fecha_idx, local_idx, visitante_idx):
-    """Inconsistencia interna a evitar: indica si ese partido de esa fecha
-    ya tiene un resultado registrado en la lista de partidos."""
     for f, local, visitante, _gl, _gv in partidos:
         if f == fecha_idx and local == local_idx and visitante == visitante_idx:
             return True
@@ -54,10 +42,6 @@ def partido_cargado(partidos, fecha_idx, local_idx, visitante_idx):
 
 def registrar_resultado(puntos, partidos, fecha_idx, local_idx, visitante_idx,
                          goles_local, goles_visitante):
-    """
-    Actualiza la matriz de puntos para ambos equipos y agrega el partido
-    (como tupla inmutable) a la lista de partidos jugados.
-    """
     puntos_local, puntos_visitante = calcular_puntos(goles_local, goles_visitante)
     puntos[local_idx][fecha_idx] = puntos_local
     puntos[visitante_idx][fecha_idx] = puntos_visitante
@@ -65,16 +49,13 @@ def registrar_resultado(puntos, partidos, fecha_idx, local_idx, visitante_idx,
     partidos.append((fecha_idx, local_idx, visitante_idx, goles_local, goles_visitante))
 
 
-# ---------- Cálculos e indicadores ----------
+#Cálculos e indicadores
 
 def total_puntos_por_equipo(puntos):
-    """Acumulación: total de puntos de cada equipo (comprensión de listas)."""
     return [sum(fila) for fila in puntos]
 
 
 def total_goles_favor_por_equipo(partidos):
-    """Acumulación: total de goles a favor de cada equipo, recorriendo la
-    lista de partidos jugados (tuplas)."""
     totales = [0 for _ in range(CANTIDAD_EQUIPOS)]
     for _f, local, visitante, gl, gv in partidos:
         totales[local] += gl
@@ -83,7 +64,6 @@ def total_goles_favor_por_equipo(partidos):
 
 
 def total_goles_contra_por_equipo(partidos):
-    """Total de goles en contra de cada equipo."""
     totales = [0 for _ in range(CANTIDAD_EQUIPOS)]
     for _f, local, visitante, gl, gv in partidos:
         totales[local] += gv
@@ -92,7 +72,6 @@ def total_goles_contra_por_equipo(partidos):
 
 
 def partidos_jugados_por_equipo(partidos):
-    """Conteo: cantidad de partidos jugados por cada equipo."""
     conteo = [0 for _ in range(CANTIDAD_EQUIPOS)]
     for _f, local, visitante, _gl, _gv in partidos:
         conteo[local] += 1
@@ -101,7 +80,6 @@ def partidos_jugados_por_equipo(partidos):
 
 
 def fechas_jugadas_por_equipo(partidos):
-    """Para cada equipo, lista de índices de fecha en los que jugó."""
     fechas = [[] for _ in range(CANTIDAD_EQUIPOS)]
     for f, local, visitante, _gl, _gv in partidos:
         fechas[local].append(f)
@@ -110,7 +88,6 @@ def fechas_jugadas_por_equipo(partidos):
 
 
 def promedio_goles_favor(partidos):
-    """Cálculo: promedio de goles a favor por partido jugado, por equipo."""
     totales_gf = total_goles_favor_por_equipo(partidos)
     jugados = partidos_jugados_por_equipo(partidos)
     promedios = []
@@ -120,14 +97,12 @@ def promedio_goles_favor(partidos):
 
 
 def diferencia_de_gol(partidos):
-    """Cálculo: diferencia de gol (goles a favor - goles en contra) por equipo."""
     gf = total_goles_favor_por_equipo(partidos)
     gc = total_goles_contra_por_equipo(partidos)
     return [f - c for f, c in zip(gf, gc)]
 
 
 def porcentaje_efectividad(puntos, partidos):
-    """Cálculo: porcentaje de puntos obtenidos sobre los puntos posibles."""
     totales = total_puntos_por_equipo(puntos)
     jugados = partidos_jugados_por_equipo(partidos)
     porcentajes = []
@@ -138,11 +113,6 @@ def porcentaje_efectividad(puntos, partidos):
 
 
 def tabla_de_posiciones(puntos, partidos):
-    """
-    Ordenamiento/ranking: arma la tabla de posiciones ordenada de mayor a
-    menor por puntos y, como desempate, por diferencia de gol.
-    Usa lambda como criterio de orden (sorted).
-    """
     totales_puntos = total_puntos_por_equipo(puntos)
     dif_gol = diferencia_de_gol(partidos)
     tabla = list(zip(EQUIPOS, totales_puntos, dif_gol))
@@ -150,18 +120,12 @@ def tabla_de_posiciones(puntos, partidos):
 
 
 def equipo_con_mas_goles_favor(partidos):
-    """Máximo: equipo con más goles a favor en el torneo."""
     totales_gf = total_goles_favor_por_equipo(partidos)
     indice_max = totales_gf.index(max(totales_gf))
     return EQUIPOS[indice_max], totales_gf[indice_max]
 
 
 def equipos_invictos(puntos, partidos):
-    """
-    Detección de condición destacable: equipos que jugaron al menos un
-    partido y nunca perdieron (ningún resultado con 0 puntos en las
-    fechas que efectivamente jugaron).
-    """
     fechas_por_equipo = fechas_jugadas_por_equipo(partidos)
     invictos = []
     for indice, equipo in enumerate(EQUIPOS):
@@ -172,10 +136,6 @@ def equipos_invictos(puntos, partidos):
 
 
 def equipos_en_estado_critico(puntos, partidos, limite_fechas=3):
-    """
-    Detección de condición destacable: equipos que, tras jugar al menos
-    `limite_fechas` partidos, todavía no sumaron ningún punto.
-    """
     fechas_por_equipo = fechas_jugadas_por_equipo(partidos)
     criticos = []
     for indice, equipo in enumerate(EQUIPOS):
@@ -186,7 +146,6 @@ def equipos_en_estado_critico(puntos, partidos, limite_fechas=3):
 
 
 def resultados_de_fecha(fecha_idx, partidos):
-    """Consulta: resultados ya cargados de una fecha específica."""
     resultados = []
     for f, local_idx, visitante_idx, gl, gv in partidos:
         if f == fecha_idx:
