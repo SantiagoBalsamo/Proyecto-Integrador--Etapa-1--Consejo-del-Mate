@@ -1,15 +1,16 @@
+"""
+Sistema principal
+"""
 
 from datos import (
-    EQUIPOS, FIXTURE, CANTIDAD_FECHAS, REGLAS_TORNEO,
+    EQUIPOS, FIXTURE, CANTIDAD_FECHAS, GOLES_MAXIMOS, REGLAS_TORNEO,
     crear_matriz_puntos, crear_registro_partidos,
 )
 import operaciones as ops
 
 
-#Funciones de presentación
-
-def mostrar_menu():
-    print("\n=== TORNEO DE ESPORTS (FIFA) - MENÚ PRINCIPAL ===")
+def mostrar_menu(): #menu interactuivo
+    print("\nTORNEO DE ESPORTS (FIFA) - MENÚ PRINCIPAL")
     print("1) Información general del torneo")
     print("2) Cargar resultado de un partido")
     print("3) Ver tabla de posiciones")
@@ -20,7 +21,7 @@ def mostrar_menu():
     print("0) Salir")
 
 
-def pedir_entero(mensaje, minimo=None, maximo=None):
+def pedir_entero(mensaje, minimo, maximo): #valida que sea numero entero
     while True:
         texto = input(mensaje)
         valido, resultado = ops.validar_entero(texto, minimo, maximo)
@@ -29,13 +30,25 @@ def pedir_entero(mensaje, minimo=None, maximo=None):
         print(f"  Error: {resultado}")
 
 
+def unir_con_comas(lista): #Devuelve los elementos de la lista separados por coma, en un solo texto
+    texto = ""
+    for i in range(len(lista)):
+        if i == 0:
+            texto = lista[i]
+        else:
+            texto = texto + ", " + lista[i]
+    return texto
+
+
 def mostrar_informacion_general():
     print("\n--- Información general del torneo ---")
     for regla in REGLAS_TORNEO:
         print(f"  - {regla}")
     print("\nEquipos participantes:")
-    for indice, equipo in enumerate(EQUIPOS, start=1):
-        print(f"  {indice}. {equipo}")
+    numero = 1
+    for equipo in EQUIPOS:
+        print(f"  {numero}. {equipo}")
+        numero = numero + 1
 
 
 def mostrar_fechas_disponibles():
@@ -52,19 +65,21 @@ def cargar_resultado(puntos, partidos):
 
     print(f"\nPartidos de la fecha {fecha}:")
     partidos_fecha = FIXTURE[fecha_idx]
-    for numero, (local_idx, visitante_idx) in enumerate(partidos_fecha, start=1):
+    numero = 1
+    for local_idx, visitante_idx in partidos_fecha:
         estado = "cargado" if ops.partido_cargado(partidos, fecha_idx, local_idx, visitante_idx) else "pendiente"
         print(f"  {numero}. {EQUIPOS[local_idx]} vs {EQUIPOS[visitante_idx]} ({estado})")
+        numero = numero + 1
 
     numero_partido = pedir_entero("Elegí el número de partido: ", 1, len(partidos_fecha))
     local_idx, visitante_idx = partidos_fecha[numero_partido - 1]
 
     if ops.partido_cargado(partidos, fecha_idx, local_idx, visitante_idx):
-        print("  Error: ese partido ya tiene un resultado cargado (inconsistencia evitada).")
+        print("  Error: ese partido ya tiene un resultado cargado.")
         return
 
-    goles_local = pedir_entero(f"Goles de {EQUIPOS[local_idx]}: ", 0)
-    goles_visitante = pedir_entero(f"Goles de {EQUIPOS[visitante_idx]}: ", 0)
+    goles_local = pedir_entero(f"Goles de {EQUIPOS[local_idx]}: ", 0, GOLES_MAXIMOS)
+    goles_visitante = pedir_entero(f"Goles de {EQUIPOS[visitante_idx]}: ", 0, GOLES_MAXIMOS)
 
     ops.registrar_resultado(puntos, partidos, fecha_idx, local_idx, visitante_idx,
                              goles_local, goles_visitante)
@@ -74,9 +89,11 @@ def cargar_resultado(puntos, partidos):
 def mostrar_tabla_posiciones(puntos, partidos):
     print("\n--- Tabla de posiciones ---")
     tabla = ops.tabla_de_posiciones(puntos, partidos)
-    print(f"{'Pos':<4}{'Equipo':<25}{'Pts':<6}{'Dif. Gol':<10}")
-    for posicion, (equipo, pts, dif) in enumerate(tabla, start=1):
-        print(f"{posicion:<4}{equipo:<25}{pts:<6}{dif:<10}")
+    print("Pos - Equipo - Puntos - Diferencia de gol")
+    posicion = 1
+    for equipo, pts, dif in tabla:
+        print(f"{posicion} - {equipo} - {pts} - {dif}")
+        posicion = posicion + 1
 
 
 def mostrar_resultados_fecha(partidos):
@@ -96,40 +113,46 @@ def mostrar_indicadores(puntos, partidos):
     promedios = ops.promedio_goles_favor(partidos)
     diferencias = ops.diferencia_de_gol(partidos)
     porcentajes = ops.porcentaje_efectividad(puntos, partidos)
-    print(f"{'Equipo':<25}{'Prom. GF':<12}{'Dif. Gol':<12}{'Efectividad %':<15}")
-    for equipo, prom, dif, efect in zip(EQUIPOS, promedios, diferencias, porcentajes):
-        print(f"{equipo:<25}{prom:<12}{dif:<12}{efect:<15}")
+    print("Equipo - Promedio goles a favor - Diferencia de gol - Efectividad")
+    for i in range(len(EQUIPOS)):
+        print(f"{EQUIPOS[i]} - {promedios[i]:.2f} - {diferencias[i]} - {porcentajes[i]:.1f}%")
 
 
 def mostrar_condiciones_destacables(puntos, partidos):
     print("\n--- Condiciones destacables ---")
     invictos = ops.equipos_invictos(puntos, partidos)
-    criticos = ops.equipos_en_estado_critico(puntos, partidos)
-    print("  Equipos invictos:", ", ".join(invictos) if invictos else "ninguno por el momento")
-    print("  Equipos en estado crítico (0 puntos tras 3+ fechas):",
-          ", ".join(criticos) if criticos else "ninguno por el momento")
+    criticos = ops.equipos_en_estado_critico(puntos, partidos, 3)
+    print("  Equipos invictos:", unir_con_comas(invictos) if invictos else "ninguno por el momento")
+    print("  Equipos en estado crítico (0 puntos con 3+ partidos jugados):",
+          unir_con_comas(criticos) if criticos else "ninguno por el momento")
 
 
 def mostrar_resumen_general(puntos, partidos):
     print("\n=== RESUMEN GENERAL DEL TORNEO ===")
-    total_partidos = CANTIDAD_FECHAS * (len(EQUIPOS) // 2)
-    jugados = len(partidos)
-    print(f"1) Partidos jugados: {jugados} de {total_partidos}")
+    total_partidos_posibles = CANTIDAD_FECHAS * (len(EQUIPOS) // 2)
+    partidos_jugados = len(partidos)
+    print(f"1) Partidos jugados: {partidos_jugados} de {total_partidos_posibles}")
 
     tabla = ops.tabla_de_posiciones(puntos, partidos)
-    lider_puntos = tabla[0][1]
-    lideres = [equipo for equipo, pts, dif in tabla if pts == lider_puntos]
-    print(f"2) Líder del torneo: {', '.join(lideres)} ({lider_puntos} puntos)")
+    puntos_del_lider = tabla[0][1]
+    lideres = []
+    for equipo, pts, dif in tabla:
+        if pts == puntos_del_lider:
+            lideres.append(equipo)
+    print(f"2) Líder del torneo: {unir_con_comas(lideres)} ({puntos_del_lider} puntos)")
 
     equipo_ataque, goles_ataque = ops.equipo_con_mas_goles_favor(partidos)
     print(f"3) Mejor ataque: {equipo_ataque} ({goles_ataque} goles a favor)")
 
     invictos = ops.equipos_invictos(puntos, partidos)
-    print(f"4) Equipos invictos: {', '.join(invictos) if invictos else 'ninguno'}")
+    print(f"4) Equipos invictos: {unir_con_comas(invictos) if invictos else 'ninguno'}")
 
-    print("5) Top 3 del torneo:")
-    for posicion, (equipo, pts, dif) in enumerate(tabla[:3], start=1):
+    print("5) Top 3 del torneo:") #se toma el top 3 del torneo
+    top_3 = tabla[:3]
+    posicion = 1
+    for equipo, pts, dif in top_3:
         print(f"   {posicion}. {equipo} - {pts} pts (dif. {dif})")
+        posicion = posicion + 1
 
 
 def main():
