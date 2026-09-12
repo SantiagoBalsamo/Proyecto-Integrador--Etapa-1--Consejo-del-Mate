@@ -1,7 +1,7 @@
 
-# Validaciones
+# Validaciones 
 
-def validar_entero(texto, minimo, maximo):# convierte el texto en entero(sin espacio) y valida max y min
+def validar_entero(texto, minimo, maximo): #conveirte el texto en entero valida entre min y max
     texto = texto.strip()
     es_valido = True
     resultado = None
@@ -27,9 +27,9 @@ def validar_entero(texto, minimo, maximo):# convierte el texto en entero(sin esp
     return es_valido, resultado
 
 
-# Registro de resultados
+#Registro de resultados
 
-def calcular_puntos(goles_local, goles_visitante, puntos_victoria, puntos_empate, puntos_derrota):
+def calcular_puntos(goles_local, goles_visitante, puntos_victoria, puntos_empate, puntos_derrota): #devuelve puntos local y puntos visitante
     if goles_local > goles_visitante:
         puntos_local = puntos_victoria
         puntos_visitante = puntos_derrota
@@ -43,13 +43,12 @@ def calcular_puntos(goles_local, goles_visitante, puntos_victoria, puntos_empate
     return puntos_local, puntos_visitante
 
 
-def partido_cargado(matriz_puntos, fecha_idx, equipo_idx, sin_resultado): # cambia la celda a sin resultado(-1) a celda con resultado
+def partido_cargado(matriz_puntos, fecha_idx, equipo_idx, sin_resultado):#si la celda ya tiene un resultado cargado deja de ser sin resultado
     return matriz_puntos[equipo_idx][fecha_idx] != sin_resultado
 
 
-def registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,fecha_idx, local_idx, visitante_idx,goles_local, goles_visitante,puntos_victoria, puntos_empate, puntos_derrota):
-    puntos_local, puntos_visitante = calcular_puntos(
-        goles_local, goles_visitante, puntos_victoria, puntos_empate, puntos_derrota)
+def registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,fecha_idx, local_idx, visitante_idx,goles_local, goles_visitante,puntos_victoria, puntos_empate, puntos_derrota): #actualiza las matricez cuando se carga el resultado
+    puntos_local, puntos_visitante = calcular_puntos(goles_local, goles_visitante, puntos_victoria, puntos_empate, puntos_derrota)
 
     matriz_puntos[local_idx][fecha_idx] = puntos_local
     matriz_puntos[visitante_idx][fecha_idx] = puntos_visitante
@@ -61,9 +60,9 @@ def registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,f
     matriz_goles_contra[visitante_idx][fecha_idx] = goles_local
 
 
-# Cálculos e indicadores 
+#Cálculos e indicadores 
 
-def total_por_equipo(matriz, cantidad_equipos, sin_resultado): #totales
+def total_por_equipo(matriz, cantidad_equipos, sin_resultado):
     totales = []
     for i in range(cantidad_equipos):
         total = 0
@@ -74,7 +73,7 @@ def total_por_equipo(matriz, cantidad_equipos, sin_resultado): #totales
     return totales
 
 
-def partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado): #cantidad de celdas con resultado cargado, por equipo
+def partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado): #cuenta las celdas con resultado por equipo
     conteo = []
     for i in range(cantidad_equipos):
         cantidad = 0
@@ -85,7 +84,7 @@ def partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado):
     return conteo
 
 
-def promedio_goles_favor(matriz_goles_favor, matriz_puntos, cantidad_equipos, sin_resultado): #promedio de goles a vor por partido jugado
+def promedio_goles_favor(matriz_goles_favor, matriz_puntos, cantidad_equipos, sin_resultado):#promedio de goles a favor por partido jugado, por equipo
     totales_gf = total_por_equipo(matriz_goles_favor, cantidad_equipos, sin_resultado)
     jugados = partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
 
@@ -98,7 +97,7 @@ def promedio_goles_favor(matriz_goles_favor, matriz_puntos, cantidad_equipos, si
     return promedios
 
 
-def diferencia_de_gol(matriz_goles_favor, matriz_goles_contra, cantidad_equipos, sin_resultado): #goles a favor - goles en contra
+def diferencia_de_gol(matriz_goles_favor, matriz_goles_contra, cantidad_equipos, sin_resultado): #diferencia de gol (goles a favor - goles en contra)
     goles_favor = total_por_equipo(matriz_goles_favor, cantidad_equipos, sin_resultado)
     goles_contra = total_por_equipo(matriz_goles_contra, cantidad_equipos, sin_resultado)
 
@@ -108,7 +107,7 @@ def diferencia_de_gol(matriz_goles_favor, matriz_goles_contra, cantidad_equipos,
     return diferencias
 
 
-def porcentaje_efectividad(matriz_puntos, cantidad_equipos, sin_resultado, puntos_victoria): #porcentaje de puntos obtenidos sobre los puntos posibles
+def porcentaje_efectividad(matriz_puntos, cantidad_equipos, sin_resultado, puntos_victoria):#porcentaje de puntos obtenidos sobre los puntos posibles.
     totales = total_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
     jugados = partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
 
@@ -122,8 +121,7 @@ def porcentaje_efectividad(matriz_puntos, cantidad_equipos, sin_resultado, punto
     return porcentajes
 
 
-def tabla_de_posiciones(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado): #arma la tabla de posiciones ordenada por puntos,luego diferencia de gol, y luego goles a favor. Usa lambda comocriterio de orden dentro de sorted()
-  
+def tabla_de_posiciones(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado): #ranking: arma la tabla de posiciones ordenada por puntos,luego diferencia de gol, y luego goles a favor. Usa lambda como criterio de orden dentro de sorted()
     totales_puntos = total_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
     totales_gf = total_por_equipo(matriz_goles_favor, cantidad_equipos, sin_resultado)
     totales_gc = total_por_equipo(matriz_goles_contra, cantidad_equipos, sin_resultado)
@@ -137,7 +135,7 @@ def tabla_de_posiciones(matriz_puntos, matriz_goles_favor, matriz_goles_contra,e
     return tabla_ordenada
 
 
-def equipo_con_mas_goles_favor(matriz_goles_favor, equipos, cantidad_equipos, sin_resultado): #equipo con mas goles a favor
+def equipo_con_mas_goles_favor(matriz_goles_favor, equipos, cantidad_equipos, sin_resultado):#equipo con más goles a favor en el torneo
     totales_gf = total_por_equipo(matriz_goles_favor, cantidad_equipos, sin_resultado)
 
     indice_max = 0
@@ -147,7 +145,7 @@ def equipo_con_mas_goles_favor(matriz_goles_favor, equipos, cantidad_equipos, si
     return equipos[indice_max], totales_gf[indice_max]
 
 
-def equipos_invictos(matriz_puntos, equipos, cantidad_equipos, sin_resultado, puntos_derrota): #invicto 
+def equipos_invictos(matriz_puntos, equipos, cantidad_equipos, sin_resultado, puntos_derrota):#equipos que jugaron al menos unpartido y nunca perdieron
     invictos = []
     for i in range(cantidad_equipos):
         jugo_algun_partido = False
@@ -162,7 +160,7 @@ def equipos_invictos(matriz_puntos, equipos, cantidad_equipos, sin_resultado, pu
     return invictos
 
 
-def equipos_en_estado_critico(matriz_puntos, equipos, cantidad_equipos, sin_resultado, limite_partidos): #estado critico (0 putos en +3 partidos)
+def equipos_en_estado_critico(matriz_puntos, equipos, cantidad_equipos, sin_resultado, limite_partidos): #estado criico (0 punto en 3o+ partidos)
     criticos = []
     for i in range(cantidad_equipos):
         cantidad_jugados = 0
@@ -176,7 +174,7 @@ def equipos_en_estado_critico(matriz_puntos, equipos, cantidad_equipos, sin_resu
     return criticos
 
 
-def resultados_de_fecha(fecha_idx, matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, fixture, sin_resultado): #recorre el fixture
+def resultados_de_fecha(fecha_idx, matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, fixture, sin_resultado): #ecorre fixture de fecha solicitada 
     resultados = []
     for local_idx, visitante_idx in fixture[fecha_idx]:
         if matriz_puntos[local_idx][fecha_idx] != sin_resultado:
@@ -184,3 +182,27 @@ def resultados_de_fecha(fecha_idx, matriz_puntos, matriz_goles_favor, matriz_gol
             gc_local = matriz_goles_contra[local_idx][fecha_idx]
             resultados.append((equipos[local_idx], gf_local, gc_local, equipos[visitante_idx]))
     return resultados
+
+
+def buscar_equipo_por_nombre(equipos, nombre_buscado, cantidad_equipos):#busca el nombre y devuelve el indice solicitado
+    nombre_normalizado = nombre_buscado.upper()
+    indice_encontrado = -1
+    for i in range(cantidad_equipos):
+        if equipos[i].upper() == nombre_normalizado:
+            indice_encontrado = i
+    return indice_encontrado
+
+
+def informacion_equipo(indice_equipo, matriz_puntos, matriz_goles_favor, matriz_goles_contra,cantidad_equipos, cantidad_fechas, sin_resultado): #informacion del equipo solicitado
+    totales_puntos = total_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
+    totales_gf = total_por_equipo(matriz_goles_favor, cantidad_equipos, sin_resultado)
+    totales_gc = total_por_equipo(matriz_goles_contra, cantidad_equipos, sin_resultado)
+    jugados = partidos_jugados_por_equipo(matriz_puntos, cantidad_equipos, sin_resultado)
+
+    puntos_equipo = totales_puntos[indice_equipo]
+    goles_favor_equipo = totales_gf[indice_equipo]
+    goles_contra_equipo = totales_gc[indice_equipo]
+    partidos_jugados_equipo = jugados[indice_equipo]
+    partidos_restantes_equipo = cantidad_fechas - partidos_jugados_equipo
+
+    return (puntos_equipo, goles_favor_equipo, goles_contra_equipo,partidos_jugados_equipo, partidos_restantes_equipo)

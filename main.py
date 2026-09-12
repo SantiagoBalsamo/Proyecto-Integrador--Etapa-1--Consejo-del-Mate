@@ -3,21 +3,22 @@ import datos
 import operaciones as ops
 
 
-# Menu
+#Funciones del menu
 
 def mostrar_menu():
-    print("\n TORNEO DE ESPORTS (FIFA) - MENÚ PRINCIPAL ")
+    print("\n=== TORNEO DE ESPORTS (FIFA) - MENÚ PRINCIPAL ===")
     print("1) Información general del torneo")
     print("2) Cargar resultado de un partido")
     print("3) Ver tabla de posiciones")
     print("4) Ver resultados de una fecha")
-    print("5) Ver indicadores (promedios, diferencia de gol, efectividad)")
-    print("6) Detectar condiciones destacables (invictos / estado crítico)")
-    print("7) Resumen general del torneo")
+    print("5) Buscar equipo")
+    print("6) Ver indicadores (promedios, diferencia de gol, efectividad)")
+    print("7) Detectar condiciones destacables (invictos / estado crítico)")
+    print("8) Resumen general del torneo")
     print("0) Salir")
 
 
-def pedir_entero(mensaje, minimo, maximo):#valida que sea un numero entero para el menu
+def pedir_entero(mensaje, minimo, maximo): #pide numero entero hasata que sea valido
     valor_valido = False
     resultado_final = 0
     while not valor_valido:
@@ -31,7 +32,7 @@ def pedir_entero(mensaje, minimo, maximo):#valida que sea un numero entero para 
     return resultado_final
 
 
-def unir_con_comas(lista):#Le agrega coma al texto
+def unir_con_comas(lista):
     texto = ""
     for i in range(len(lista)):
         if i == 0:
@@ -42,7 +43,7 @@ def unir_con_comas(lista):#Le agrega coma al texto
 
 
 def mostrar_informacion_general(equipos, reglas_torneo):
-    print("\n--- Información general del torneo ---")
+    print("\nInformación general del torneo")
     for regla in reglas_torneo:
         print(f"  - {regla}")
     print("\nEquipos participantes:")
@@ -59,8 +60,7 @@ def mostrar_fechas_disponibles(cantidad_fechas):
 
 
 def cargar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, fixture, cantidad_fechas, goles_maximos, sin_resultado,puntos_victoria, puntos_empate, puntos_derrota):
-
-    print("\n Cargar resultado de un partido")
+    print("\nCargar resultado de un partido")
     mostrar_fechas_disponibles(cantidad_fechas)
     fecha = pedir_entero("Elegí el número de fecha: ", 1, cantidad_fechas)
     fecha_idx = fecha - 1
@@ -82,12 +82,43 @@ def cargar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equi
         goles_local = pedir_entero(f"Goles de {equipos[local_idx]}: ", 0, goles_maximos)
         goles_visitante = pedir_entero(f"Goles de {equipos[visitante_idx]}: ", 0, goles_maximos)
 
-        ops.registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,fecha_idx, local_idx, visitante_idx, goles_local, goles_visitante,puntos_victoria, puntos_empate, puntos_derrota)
+        ops.registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,
+                                 fecha_idx, local_idx, visitante_idx, goles_local, goles_visitante,
+                                 puntos_victoria, puntos_empate, puntos_derrota)
         print("  Resultado cargado correctamente.")
 
 
+def buscar_equipo(equipos, matriz_puntos, matriz_goles_favor, matriz_goles_contra,
+                   cantidad_equipos, cantidad_fechas, sin_resultado):
+    print("\n Buscar equipo ")
+    print("Equipos participantes:")
+    numero = 1
+    for equipo in equipos:
+        print(f"  {numero}. {equipo}")
+        numero = numero + 1
+
+    nombre_buscado = input("\nEscribí el nombre del equipo: ")
+    nombre_limpio = nombre_buscado.strip()
+
+    if nombre_limpio == "":
+        print("  Error: el nombre no puede estar vacío.")
+    else:
+        indice_equipo = ops.buscar_equipo_por_nombre(equipos, nombre_limpio, cantidad_equipos)
+        if indice_equipo == -1:
+            print("  Error: no existe ningún equipo con ese nombre.")
+        else:
+            informacion = ops.informacion_equipo(indice_equipo, matriz_puntos, matriz_goles_favor,matriz_goles_contra, cantidad_equipos,cantidad_fechas, sin_resultado)
+            puntos_equipo, gf_equipo, gc_equipo, jugados_equipo, restantes_equipo = informacion
+            print(f"\n--- {equipos[indice_equipo]} ---")
+            print(f"  Puntos: {puntos_equipo}")
+            print(f"  Goles a favor: {gf_equipo}")
+            print(f"  Goles en contra: {gc_equipo}")
+            print(f"  Partidos jugados: {jugados_equipo}")
+            print(f"  Partidos restantes por jugar: {restantes_equipo}")
+
+
 def mostrar_tabla_posiciones(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado):
-    print("\n--- Tabla de posiciones ---")
+    print("\nTabla de posiciones ")
     tabla = ops.tabla_de_posiciones(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado)
     print("Pos - Equipo - Puntos - Diferencia de gol - Goles a favor")
     posicion = 1
@@ -100,7 +131,7 @@ def mostrar_resultados_fecha(matriz_puntos, matriz_goles_favor, matriz_goles_con
     mostrar_fechas_disponibles(cantidad_fechas)
     fecha = pedir_entero("¿De qué fecha querés ver los resultados?: ", 1, cantidad_fechas)
     resultados = ops.resultados_de_fecha(fecha - 1, matriz_puntos, matriz_goles_favor,matriz_goles_contra, equipos, fixture, sin_resultado)
-    print(f"\nResultados de la fecha {fecha}")
+    print(f"\n Resultados de la fecha: {fecha}")
     if not resultados:
         print("  Todavía no hay resultados cargados para esta fecha.")
     else:
@@ -109,7 +140,7 @@ def mostrar_resultados_fecha(matriz_puntos, matriz_goles_favor, matriz_goles_con
 
 
 def mostrar_indicadores(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado, puntos_victoria):
-    print("\nIndicadores")
+    print("\n Indicadores ")
     promedios = ops.promedio_goles_favor(matriz_goles_favor, matriz_puntos, cantidad_equipos, sin_resultado)
     diferencias = ops.diferencia_de_gol(matriz_goles_favor, matriz_goles_contra, cantidad_equipos, sin_resultado)
     porcentajes = ops.porcentaje_efectividad(matriz_puntos, cantidad_equipos, sin_resultado, puntos_victoria)
@@ -128,7 +159,7 @@ def mostrar_condiciones_destacables(matriz_puntos, equipos, cantidad_equipos, si
 
 
 def mostrar_resumen_general(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, cantidad_fechas, sin_resultado, puntos_derrota):
-    print("\nRESUMEN GENERAL DEL TORNEO")
+    print("\n RESUMEN GENERAL DEL TORNEO ")
     total_partidos_posibles = cantidad_fechas * (len(equipos) // 2)
 
     celdas_jugadas = 0
@@ -153,7 +184,7 @@ def mostrar_resumen_general(matriz_puntos, matriz_goles_favor, matriz_goles_cont
     invictos = ops.equipos_invictos(matriz_puntos, equipos, cantidad_equipos, sin_resultado, puntos_derrota)
     print(f"4) Equipos invictos: {unir_con_comas(invictos) if invictos else 'ninguno'}")
 
-    print("5) Top 3 del torneo:")#top 3 con slincing
+    print("5) Top 3 del torneo:")#slincing para tomar el top 3 
     top_3 = tabla[:3]
     posicion = 1
     for equipo, pts, dif, gf in top_3:
@@ -180,7 +211,7 @@ def main():
     while opcion != 0:
         mostrar_menu()
         texto_opcion = input("Elegí una opción: ")
-        valido, opcion = ops.validar_entero(texto_opcion, 0, 7)
+        valido, opcion = ops.validar_entero(texto_opcion, 0, 8)
         if not valido:
             print(f"  Error: {opcion}")
             opcion = -1
@@ -193,10 +224,12 @@ def main():
         elif opcion == 4:
             mostrar_resultados_fecha(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, fixture, cantidad_fechas, sin_resultado)
         elif opcion == 5:
-            mostrar_indicadores(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado, puntos_victoria)
+            buscar_equipo(equipos, matriz_puntos, matriz_goles_favor, matriz_goles_contra,cantidad_equipos, cantidad_fechas, sin_resultado)
         elif opcion == 6:
-            mostrar_condiciones_destacables(matriz_puntos, equipos, cantidad_equipos, sin_resultado, puntos_derrota)
+            mostrar_indicadores(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, sin_resultado, puntos_victoria)
         elif opcion == 7:
+            mostrar_condiciones_destacables(matriz_puntos, equipos, cantidad_equipos, sin_resultado, puntos_derrota)
+        elif opcion == 8:
             mostrar_resumen_general(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equipos, cantidad_equipos, cantidad_fechas, sin_resultado, puntos_derrota)
         elif opcion == 0:
             print("\n¡Gracias por usar el sistema! Hasta la próxima.")
