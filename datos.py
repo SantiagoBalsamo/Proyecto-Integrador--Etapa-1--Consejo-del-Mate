@@ -1,38 +1,60 @@
 
-EQUIPOS = [
-    "Grupo 9",
-    "Los Autores",
-    "eXperience",
-    "BlueSquad",
-    "Consejo del Mate",
-    "Grupo 6",
-    "Juan de los Palotes",
-    "Overflow",
-    "Panini",
-    "Grupo 10",
-]  
-
-PUNTOS_VICTORIA = 3
-PUNTOS_EMPATE = 1
-PUNTOS_DERROTA = 0
-GOLES_MAXIMOS = 20  
-
-CANTIDAD_EQUIPOS = len(EQUIPOS)
-CANTIDAD_FECHAS = CANTIDAD_EQUIPOS - 1  
-
-REGLAS_TORNEO = (
-    "Formato: Round Robin (todos contra todos, una rueda)",
-    f"Cantidad de equipos: {CANTIDAD_EQUIPOS}",
-    f"Cantidad de fechas: {CANTIDAD_FECHAS}",
-    f"Puntos por victoria: {PUNTOS_VICTORIA}",
-    f"Puntos por empate: {PUNTOS_EMPATE}",
-    f"Puntos por derrota: {PUNTOS_DERROTA}",
-    "Criterio de desempate: diferencia de gol",
-)  
+def obtener_equipos(): #lista de los equipos
+    return [
+        "Real Norte",
+        "Atlético Sur",
+        "Deportivo Central",
+        "Unión FC",
+        "Estudiantes del Oeste",
+        "Talleres Andino",
+        "Rayo Dorado",
+        "Halcones FC",
+        "Cóndor United",
+        "Pumas del Litoral",
+    ]
 
 
-def generar_fixture(equipos): #genera el fixture, devuelve tuplas
-   
+def obtener_puntos_victoria():
+    return 3
+
+
+def obtener_puntos_empate():
+    return 1
+
+
+def obtener_puntos_derrota():
+    return 0
+
+
+def obtener_goles_maximos(): #maximo de goles 
+    return 20
+
+
+def obtener_sin_resultado(): #valor centinela (es el valor en la tabla de partidos no cargados)
+    return -1
+
+
+def obtener_cantidad_equipos(equipos):
+    return len(equipos)
+
+
+def obtener_cantidad_fechas(equipos):
+    return len(equipos) - 1
+
+
+def obtener_reglas_torneo(cantidad_equipos, cantidad_fechas, puntos_victoria, puntos_empate, puntos_derrota): #tupla para mostrar datos en pantallas
+    return (
+        "Formato: Round Robin (todos contra todos, una rueda)",
+        f"Cantidad de equipos: {cantidad_equipos}",
+        f"Cantidad de fechas: {cantidad_fechas}",
+        f"Puntos por victoria: {puntos_victoria}",
+        f"Puntos por empate: {puntos_empate}",
+        f"Puntos por derrota: {puntos_derrota}",
+        "Criterio de desempate: diferencia de gol, luego goles a favor",
+    )
+
+
+def generar_fixture(equipos):
     indices = []
     for i in range(len(equipos)):
         indices.append(i)
@@ -56,20 +78,31 @@ def generar_fixture(equipos): #genera el fixture, devuelve tuplas
     return tuple(fixture)
 
 
-FIXTURE = generar_fixture(EQUIPOS)
-
-
-
-def crear_matriz_puntos(): #matriz general, puntos obtenidos por cada fecha
+def crear_matriz_puntos(cantidad_equipos, cantidad_fechas, sin_resultado): #matriz de puntos(fechas y partidos)
     matriz = []
-    for indice_equipo in range(CANTIDAD_EQUIPOS):
+    for indice_equipo in range(cantidad_equipos):
         fila = []
-        for indice_fecha in range(CANTIDAD_FECHAS):
-            fila.append(0)
+        for indice_fecha in range(cantidad_fechas):
+            fila.append(sin_resultado)
         matriz.append(fila)
     return matriz
 
 
-def crear_registro_partidos(): #lista vacia de partidos y crece mediante se cargan los resultados
+def crear_matriz_goles_favor(cantidad_equipos, cantidad_fechas, sin_resultado): #matriz goles a favor 
+    matriz = []
+    for indice_equipo in range(cantidad_equipos):
+        fila = []
+        for indice_fecha in range(cantidad_fechas):
+            fila.append(sin_resultado)
+        matriz.append(fila)
+    return matriz
 
-    return []
+
+def crear_matriz_goles_contra(cantidad_equipos, cantidad_fechas, sin_resultado):#matriz goles en contra
+    matriz = []
+    for indice_equipo in range(cantidad_equipos):
+        fila = []
+        for indice_fecha in range(cantidad_fechas):
+            fila.append(sin_resultado)
+        matriz.append(fila)
+    return matriz
