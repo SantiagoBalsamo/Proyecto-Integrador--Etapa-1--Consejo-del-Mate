@@ -82,9 +82,7 @@ def cargar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,equi
         goles_local = pedir_entero(f"Goles de {equipos[local_idx]}: ", 0, goles_maximos)
         goles_visitante = pedir_entero(f"Goles de {equipos[visitante_idx]}: ", 0, goles_maximos)
 
-        ops.registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,
-                                 fecha_idx, local_idx, visitante_idx, goles_local, goles_visitante,
-                                 puntos_victoria, puntos_empate, puntos_derrota)
+        ops.registrar_resultado(matriz_puntos, matriz_goles_favor, matriz_goles_contra,fecha_idx, local_idx, visitante_idx, goles_local, goles_visitante,puntos_victoria, puntos_empate, puntos_derrota)
         print("  Resultado cargado correctamente.")
 
 

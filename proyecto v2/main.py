@@ -17,7 +17,7 @@ def mostrar_menu():
     print("0) Salir")
 
 
-def pedir_entero(mensaje, minimo, maximo):
+def pedir_entero(mensaje, minimo, maximo): #pide el numero entero hasta que sea valido
     valor_valido = False
     resultado_final = 0
     while not valor_valido:
