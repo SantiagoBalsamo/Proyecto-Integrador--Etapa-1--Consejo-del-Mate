@@ -79,10 +79,8 @@ def generar_fixture(equipos):
 def crear_matriz_puntos(cantidad_equipos, cantidad_fechas, sin_resultado): 
     return [[sin_resultado for indice_fecha in range(cantidad_fechas)] for indice_equipo in range(cantidad_equipos)]
 
-
 def crear_matriz_goles_favor(cantidad_equipos, cantidad_fechas, sin_resultado): 
     return [[sin_resultado for indice_fecha in range(cantidad_fechas)] for indice_equipo in range(cantidad_equipos)]
-
 
 def crear_matriz_goles_contra(cantidad_equipos, cantidad_fechas, sin_resultado):
     return [[sin_resultado for indice_fecha in range(cantidad_fechas)] for indice_equipo in range(cantidad_equipos)]
